@@ -7,10 +7,8 @@ cnt_up=0
 cnt_down=0
 
 
-cap=cv2.VideoCapture("clip3.mp4")
-
+cap=cv2.VideoCapture("clip1.mp4")
 # cap = cv2.VideoCapture(0)
-
 
 #Get width and height of video
 
@@ -21,12 +19,8 @@ print(h)
 frameArea=h*w
 areaTH=frameArea/400
 
-#Lines
-# line_up=int(2*(h/5))
-# line_down=int(3*(h/5))
-#
-# up_limit=int(1*(h/5))
-# down_limit=int(4*(h/5))
+#Testing
+
 
 #Testing change position
 line_up=int(3*(h/5))
@@ -76,6 +70,8 @@ cars = []
 max_p_age = 5
 pid = 1
 
+img_num = 0
+
 
 while(cap.isOpened()):
     ret,frame=cap.read()
@@ -114,6 +110,8 @@ while(cap.isOpened()):
                 cy=int(m['m01']/m['m00'])
                 x,y,w,h=cv2.boundingRect(cnt)
 
+
+
                 new=True
                 if cy in range(up_limit,down_limit):
                     for i in cars:
@@ -126,6 +124,11 @@ while(cap.isOpened()):
                                 print("ID:",i.getId(),'crossed going up at', time.strftime("%c"))
                             elif i.going_DOWN(line_down,line_up)==True:
                                 cnt_down+=1
+                                roi = frame[y:y + h, x:x + w]
+                                img_num += 1
+                                cv2.imwrite("test" + str(img_num) + ".png", roi)
+                                if img_num > 30:
+                                    exit()
                                 print("ID:", i.getId(), 'crossed going up at', time.strftime("%c"))
                             break
                         if i.getState()=='1':
@@ -163,12 +166,14 @@ while(cap.isOpened()):
         cv2.putText(frame, str_down, (10, 90), font, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
         cv2.putText(frame, str_down, (10, 90), font, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
         cv2.imshow('Frame',frame)
+        cv2.imshow('Frame2',mask2)
 
         if cv2.waitKey(1)&0xff==ord('q'):
             break
 
     else:
         break
+
 
 cap.release()
 cv2.destroyAllWindows()
