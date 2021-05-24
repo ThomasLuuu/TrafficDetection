@@ -77,7 +77,7 @@ lineDrawn = []
 
 # specifying output folder for exports
 path = 'output'
-os.mkdir(path)
+os.makedirs(path, exist_ok=True)
 
 def mouse_handler(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
