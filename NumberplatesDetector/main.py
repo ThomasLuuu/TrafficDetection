@@ -24,37 +24,7 @@ areaTH = frameArea / 400
 # Testing
 
 
-# Testing change position
-line_up = int(3 * (height / 5))
-line_down = int(2 * (height / 5))
 
-print(line_up)
-print(line_down)
-up_limit = int(1 * (height / 5))
-down_limit = int(4 * (height / 5))
-
-print("Red line y:", str(line_down))
-print("Blue line y:", str(line_up))
-line_down_color = (255, 0, 0)
-line_up_color = (225, 0, 255)
-pt1 = [0, line_down]
-pt2 = [width, line_down]
-pts_L1 = np.array([pt1, pt2], np.int32)
-pts_L1 = pts_L1.reshape((-1, 1, 2))
-pt3 = [0, line_up * 1.12]
-pt4 = [width, line_up * 1.12]
-
-pts_L2 = np.array([pt3, pt4], np.int32)
-pts_L2 = pts_L2.reshape((-1, 1, 2))
-
-pt5 = [0, down_limit]
-pt6 = [width, down_limit]
-pts_L3 = np.array([pt5, pt6], np.int32)
-pts_L3 = pts_L3.reshape((-1, 1, 2))
-pt7 = [0, up_limit]
-pt8 = [width, up_limit]
-pts_L4 = np.array([pt7, pt8], np.int32)
-pts_L4 = pts_L4.reshape((-1, 1, 2))
 
 # Background Subtractor
 fgbg = cv2.bgsegm.createBackgroundSubtractorGSOC(noiseRemovalThresholdFacBG=0.01, noiseRemovalThresholdFacFG=0.0001)
@@ -77,7 +47,7 @@ lineDrawn = []
 
 # specifying output folder for exports
 path = 'output'
-os.mkdir(path)
+os.makedirs(path, exist_ok=True)
 
 def mouse_handler(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
@@ -102,6 +72,48 @@ while (cap.isOpened()):
         i.age_one()
     fgmask = fgbg.apply(frame)
     fgmask2 = fgbg.apply(frame)
+
+
+    # Testing change position
+    line_up = int(3 * (height / 5))
+    line_down = int(2 * (height / 5))
+
+    print(line_up)
+    print(line_down)
+    up_limit = int(1 * (height / 5))
+    down_limit = int(4 * (height / 5))
+
+    print("Red line y:", str(line_down))
+    print("Blue line y:", str(line_up))
+    line_down_color = (255, 0, 0)
+    line_up_color = (225, 0, 255)
+    pt1 = [0, line_down]
+    pt2 = [width, line_down]
+    # pts_L1 = np.array([pt1, pt2], np.int32)
+    pt3 = [0, line_up * 1.12]
+    pt4 = [width, line_up * 1.12]
+
+    pts_L2 = np.array([pt3, pt4], np.int32)
+    pts_L2 = pts_L2.reshape((-1, 1, 2))
+
+    pt5 = [0, down_limit]
+    pt6 = [width, down_limit]
+    pts_L3 = np.array([pt5, pt6], np.int32)
+    pts_L3 = pts_L3.reshape((-1, 1, 2))
+    pt7 = [0, up_limit]
+    pt8 = [width, up_limit]
+    pts_L4 = np.array([pt7, pt8], np.int32)
+    pts_L4 = pts_L4.reshape((-1, 1, 2))
+
+    if len(lineDrawn) > 0:
+        pts_L1 = np.array([lineDrawn[0], lineDrawn[0]], np.int32)
+        pts_L1 = pts_L1.reshape((-1, 1, 2))
+
+    else:
+        pts_L1 = np.array([(0,0), (0,0)], np.int32)
+        pts_L1 = pts_L1.reshape((-1, 1, 2))
+
+
 
     if ret == True:
 
