@@ -15,6 +15,13 @@ cap = cv2.VideoCapture("clip3.mp4")
 # Get width and height of video
 width = cap.get(3)
 height = cap.get(4)
+
+# retrieve FPS from video file to
+# apply appropriate waitkey() polling interval
+fps = cap.get(cv2.CAP_PROP_FPS)
+key_polling = int((1 / int(fps)) * 1000) - 10
+print(fps)
+
 frameArea = width * height
 areaTH = frameArea / 400
 
@@ -187,7 +194,7 @@ while (cap.isOpened()):
         cv2.imshow('Frame', frame)
         cv2.setMouseCallback('Frame', mouse_handler)
         cv2.imshow('Frame2', mask)
-        if cv2.waitKey(30) & 0xff == ord('q'):
+        if cv2.waitKey(key_polling) & 0xff == ord('q'):
             break
     else:
         break
