@@ -13,19 +13,14 @@ cap = cv2.VideoCapture("clip3.mp4")
 # cap = cv2.VideoCapture(0)
 
 # Get width and height of video
-
 width = cap.get(3)
 height = cap.get(4)
 frameArea = width * height
 areaTH = frameArea / 400
 
-# Testing
-
-
-
-
 # Background Subtractor
-fgbg = cv2.bgsegm.createBackgroundSubtractorGSOC(noiseRemovalThresholdFacBG=0.01, noiseRemovalThresholdFacFG=0.0001)
+# fgbg = cv2.bgsegm.createBackgroundSubtractorGSOC(noiseRemovalThresholdFacBG=0.01, noiseRemovalThresholdFacFG=0.0001)
+fgbg=cv2.createBackgroundSubtractorMOG2(detectShadows=False,history=300,varThreshold = 25)
 
 # Kernals
 kernalOp = np.ones((3, 3), np.uint8)
@@ -62,32 +57,24 @@ def mouse_handler(event, x, y, flags, param):
 
 while (cap.isOpened()):
     ret, frame = cap.read()
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    cv2.imshow('frame', gray)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
     for i in cars:
         i.age_one()
     fgmask = fgbg.apply(frame)
-    fgmask2 = fgbg.apply(frame)
 
-
-    # Testing change position
     line_up = int(2 * (height / 5))
     line_down = int(3 * (height / 5))
 
-    print(line_up)
-    print(line_down)
     up_limit = int(1 * (height / 5))
     down_limit = int(4 * (height / 5))
 
-    print("Red line y:", str(line_down))
-    print("Blue line y:", str(line_up))
+    # print("Red line y:", str(line_down))
+    # print("Blue line y:", str(line_up))
+
     line_down_color = (255, 0, 0)
     line_up_color = (225, 0, 255)
     pt1 = [0, line_down]
     pt2 = [width, line_down]
-    # pts_L1 = np.array([pt1, pt2], np.int32)
+    pts_L1 = np.array([pt1, pt2], np.int32)
     pt3 = [0, line_up]
     pt4 = [width, line_up]
 
@@ -107,36 +94,31 @@ while (cap.isOpened()):
         pts_L1 = np.array([lineDrawn[0], lineDrawn[0]], np.int32)
         pts_L1 = pts_L1.reshape((-1, 1, 2))
 
-    
-
     else:
         pts_L1 = np.array([(0,0), (0,0)], np.int32)
         pts_L1 = pts_L1.reshape((-1, 1, 2))
-
-
 
     if ret == True:
 
         # Binarization
         ret, imBin = cv2.threshold(fgmask, 200, 255, cv2.THRESH_BINARY)
-        ret, imBin2 = cv2.threshold(fgmask2, 200, 255, cv2.THRESH_BINARY)
         # OPening i.e First Erode the dilate
         mask = cv2.morphologyEx(imBin, cv2.MORPH_OPEN, kernalOp)
-        mask2 = cv2.morphologyEx(imBin2, cv2.MORPH_CLOSE, kernalOp)
 
         # Closing i.e First Dilate then Erode
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernalCl)
-        mask2 = cv2.morphologyEx(mask2, cv2.MORPH_CLOSE, kernalCl)
 
         # Find Contours
         countours0, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         for cnt in countours0:
             area = cv2.contourArea(cnt)
             if area > areaTH:
-                ####Tracking######
+                # extracting centroids here
                 m = cv2.moments(cnt)
                 cx = int(m['m10'] / m['m00'])
                 cy = int(m['m01'] / m['m00'])
+
+                # assigning rectangle/bounding box coords
                 x, y, w, h = cv2.boundingRect(cnt)
 
                 new = True
@@ -151,13 +133,15 @@ while (cap.isOpened()):
                                 print("ID:", i.getId(), 'crossed going up at', time.strftime("%c"))
                             elif i.going_DOWN(line_down, line_up) == True:
                                 cnt_down += 1
-                                roi = frame[y:y + h, x:x + w]
-                                img_num += 1
-                                file_name = "test" + str(img_num) + ".png"
-                                cv2.imwrite(os.path.join(path, file_name), roi)
-                                if img_num > 30:
-                                    exit()
                                 print("ID:", i.getId(), 'crossed going up at', time.strftime("%c"))
+
+                                # outputting and cropping captured vehicles
+                                # roi = frame[y:y + h, x:x + w]
+                                # img_num += 1
+                                # file_name = "test" + str(img_num) + ".png"
+                                # cv2.imwrite(os.path.join(path, file_name), roi)
+                                # if img_num > 30:
+                                #     exit()
                             break
                         if i.getState() == '1':
                             if i.getDir() == 'down' and i.getY() > down_limit:
@@ -169,7 +153,8 @@ while (cap.isOpened()):
                             cars.pop(index)
                             del i
 
-                    if new == True:  # If nothing is detected,create new
+                    # If nothing is detected,create new
+                    if new:
                         p = vehicles.Car(pid, cx, cy, max_p_age)
                         cars.append(p)
                         pid += 1
@@ -201,10 +186,9 @@ while (cap.isOpened()):
 
         cv2.imshow('Frame', frame)
         cv2.setMouseCallback('Frame', mouse_handler)
-        cv2.imshow('Frame2', mask2)
-        if cv2.waitKey(1) & 0xff == ord('q'):
+        cv2.imshow('Frame2', mask)
+        if cv2.waitKey(30) & 0xff == ord('q'):
             break
-
     else:
         break
 
