@@ -16,8 +16,6 @@ cap = cv2.VideoCapture("clip3.mp4")
 
 width = cap.get(3)
 height = cap.get(4)
-print(width)
-print(height)
 frameArea = width * height
 areaTH = frameArea / 400
 
@@ -75,8 +73,8 @@ while (cap.isOpened()):
 
 
     # Testing change position
-    line_up = int(3 * (height / 5))
-    line_down = int(2 * (height / 5))
+    line_up = int(2 * (height / 5))
+    line_down = int(3 * (height / 5))
 
     print(line_up)
     print(line_down)
@@ -90,8 +88,8 @@ while (cap.isOpened()):
     pt1 = [0, line_down]
     pt2 = [width, line_down]
     # pts_L1 = np.array([pt1, pt2], np.int32)
-    pt3 = [0, line_up * 1.12]
-    pt4 = [width, line_up * 1.12]
+    pt3 = [0, line_up]
+    pt4 = [width, line_up]
 
     pts_L2 = np.array([pt3, pt4], np.int32)
     pts_L2 = pts_L2.reshape((-1, 1, 2))
@@ -108,6 +106,8 @@ while (cap.isOpened()):
     if len(lineDrawn) > 0:
         pts_L1 = np.array([lineDrawn[0], lineDrawn[0]], np.int32)
         pts_L1 = pts_L1.reshape((-1, 1, 2))
+
+    
 
     else:
         pts_L1 = np.array([(0,0), (0,0)], np.int32)
@@ -132,7 +132,6 @@ while (cap.isOpened()):
         countours0, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         for cnt in countours0:
             area = cv2.contourArea(cnt)
-            print("this is area:" + str(area))
             if area > areaTH:
                 ####Tracking######
                 m = cv2.moments(cnt)
