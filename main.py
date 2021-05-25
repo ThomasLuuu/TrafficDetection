@@ -193,7 +193,7 @@ while (cap.isOpened()):
 
         cv2.imshow('Frame', frame)
         cv2.setMouseCallback('Frame', mouse_handler)
-        cv2.imshow('Frame2', mask)
+        # cv2.imshow('Frame2', mask)
         if cv2.waitKey(key_polling) & 0xff == ord('q'):
             break
     else:
