@@ -44,7 +44,8 @@ img_num = 0
 
 # initialize array to store mouse coords for drawing a line
 lineDrawn = []
-
+location =[]
+location2 =[]
 # specifying output folder for exports
 path = 'output'
 os.makedirs(path, exist_ok=True)
@@ -70,40 +71,48 @@ while (cap.isOpened()):
 
     line_up = int(2 * (height / 5))
     line_down = int(3 * (height / 5))
+    # print(line_down)
+    # print(line_up)
+    # break
 
-    up_limit = int(1 * (height / 5))
-    down_limit = int(4 * (height / 5))
+    up_limit = int(1.9 * (height / 5))
+    down_limit = int(3.1 * (height / 5))
 
     # print("Red line y:", str(line_down))
     # print("Blue line y:", str(line_up))
 
     line_down_color = (255, 0, 0)
-    line_up_color = (225, 0, 255)
+    # line_up_color = (225, 0, 255)
     pt1 = [0, line_down]
     pt2 = [width, line_down]
     pts_L1 = np.array([pt1, pt2], np.int32)
-    pt3 = [0, line_up]
-    pt4 = [width, line_up]
+    # pt3 = [0, line_up]
+    # pt4 = [width, line_up]
 
-    pts_L2 = np.array([pt3, pt4], np.int32)
-    pts_L2 = pts_L2.reshape((-1, 1, 2))
+    # pts_L2 = np.array([pt3, pt4], np.int32)
+    # pts_L2 = pts_L2.reshape((-1, 1, 2))
 
     pt5 = [0, down_limit]
     pt6 = [width, down_limit]
     pts_L3 = np.array([pt5, pt6], np.int32)
     pts_L3 = pts_L3.reshape((-1, 1, 2))
-    pt7 = [0, up_limit]
-    pt8 = [width, up_limit]
-    pts_L4 = np.array([pt7, pt8], np.int32)
-    pts_L4 = pts_L4.reshape((-1, 1, 2))
 
-    if len(lineDrawn) > 0:
-        pts_L1 = np.array([lineDrawn[0], lineDrawn[0]], np.int32)
-        pts_L1 = pts_L1.reshape((-1, 1, 2))
+    # pt7 = [0, up_limit]
+    # pt8 = [width, up_limit]
+    # pts_L4 = np.array([pt7, pt8], np.int32)
+    # pts_L4 = pts_L4.reshape((-1, 1, 2))
+
+    if len(lineDrawn) > 1:
+        location = lineDrawn[0]
+        # print(location)
+        # pts_L1 = np.array([lineDrawn[0], lineDrawn[0]], np.int32)
+        # pts_L1 = pts_L1.reshape((-1, 1, 2))
 
     else:
-        pts_L1 = np.array([(0,0), (0,0)], np.int32)
-        pts_L1 = pts_L1.reshape((-1, 1, 2))
+        # pts_L1 = np.array([(0,0), (0,0)], np.int32)
+        # pts_L1 = pts_L1.reshape((-1, 1, 2))
+        location = [0,1]
+        line_down = 0
 
     if ret == True:
 
@@ -138,7 +147,14 @@ while (cap.isOpened()):
                             # if i.going_UP(line_down, line_up) == True:
                             #     cnt_up += 1
                             #     print("ID:", i.getId(), 'crossed going up at', time.strftime("%c"))
-                            if i.going_DOWN(line_down, line_up) == True:
+                            # if len(lineDrawn)>1:
+                            #     location = lineDrawn[0]
+                            #     location2 = lineDrawn[1]
+                            #     print(location[0])
+                            #     print(location2[0])
+                            
+
+                            if i.going_DOWN(line_down,location[1]) == True:
                                 cnt_down += 1
                                 print("ID:", i.getId(), 'crossed going down at', time.strftime("%c"))
 
@@ -153,8 +169,8 @@ while (cap.isOpened()):
                         if i.getState() == '1':
                             if i.getDir() == 'down' and i.getY() > down_limit:
                                 i.setDone()
-                            elif i.getDir() == 'up' and i.getY() < up_limit:
-                                i.setDone()
+                            # elif i.getDir() == 'up' and i.getY() < up_limit:
+                            #     i.setDone()
                         if i.timedOut():
                             index = cars.index(i)
                             cars.pop(index)
@@ -174,12 +190,12 @@ while (cap.isOpened()):
 
         str_up = 'UP: ' + str(cnt_up)
         str_down = 'DOWN: ' + str(cnt_down)
-        frame = cv2.polylines(frame, [pts_L1], False, line_down_color, thickness=2)
-        frame = cv2.polylines(frame, [pts_L2], False, line_up_color, thickness=2)
+        # frame = cv2.polylines(frame, [pts_L1], False, line_down_color, thickness=2)
+        # frame = cv2.polylines(frame, [pts_L2], False, line_up_color, thickness=2)
         frame = cv2.polylines(frame, [pts_L3], False, (255, 255, 255), thickness=1)
-        frame = cv2.polylines(frame, [pts_L4], False, (255, 255, 255), thickness=1)
-        cv2.putText(frame, str_up, (10, 40), font, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
-        cv2.putText(frame, str_up, (10, 40), font, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
+        # frame = cv2.polylines(frame, [pts_L4], False, (255, 255, 255), thickness=1)
+        # cv2.putText(frame, str_up, (10, 40), font, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
+        # cv2.putText(frame, str_up, (10, 40), font, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
         cv2.putText(frame, str_down, (10, 90), font, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
         cv2.putText(frame, str_down, (10, 90), font, 0.5, (255, 0, 0), 1, cv2.LINE_AA)
         cv2.putText(frame, str(width), (10, 60), font, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
