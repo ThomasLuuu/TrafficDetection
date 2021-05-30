@@ -135,12 +135,12 @@ while (cap.isOpened()):
                             new = False
                             i.updateCoords(cx, cy)
 
-                            if i.going_UP(line_down, line_up) == True:
-                                cnt_up += 1
-                                print("ID:", i.getId(), 'crossed going up at', time.strftime("%c"))
-                            elif i.going_DOWN(line_down, line_up) == True:
+                            # if i.going_UP(line_down, line_up) == True:
+                            #     cnt_up += 1
+                            #     print("ID:", i.getId(), 'crossed going up at', time.strftime("%c"))
+                            if i.going_DOWN(line_down, line_up) == True:
                                 cnt_down += 1
-                                print("ID:", i.getId(), 'crossed going up at', time.strftime("%c"))
+                                print("ID:", i.getId(), 'crossed going down at', time.strftime("%c"))
 
                                 # outputting and cropping captured vehicles
                                 # roi = frame[y:y + h, x:x + w]
